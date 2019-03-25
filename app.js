@@ -27,6 +27,37 @@ var budgetController = (function(){
     }
   }
 
+  return {
+    addItem : function(type, des, val){
+      var newItem, ID;
+
+      // el ID debe ser un numero unico que se le debe asignar a cada nuevo item, ya sea income o expense
+      // ejemplos: si se tiene [1 2 3 4 5] el ID siguiente deberia ser 6
+      // pero      si se tiene [1 2 4 6 8] el ID siguiente deberia ser 9
+      // debido a que vamos a poder eliminar los items, el arreglo puede ser modificado, por lo que se requiere que el ID sea el ultimo elemento del arreglo + 1
+      if(data.allItems[type].length > 0){
+        ID = data.allItems[type][(data.allItems[type].length) - 1].id + 1;
+      } else {
+        ID = 0;
+      }
+      
+      // se crea un nuevo item segun sea income o expense
+      if(type === "exp"){
+        newItem = new Expense(ID, des, val);
+      }else if(type === "inc"){
+        newItem = new Income(ID, des, val);
+      }
+
+      // agrega el intem creado a la estructura de datos
+      data.allItems[type].push(newItem);
+      // se retorna el nuevo elemento
+      return newItem;
+    },
+    testing : function(){
+      console.log(data);
+    }
+  }
+
 }());
 
 // CONTROLADOR UI
@@ -44,7 +75,7 @@ var UIController = (function(){
     getInput : function(){
       return {
         //se reemplazan los parametros con los strings del DOM corresp
-        type : document.querySelector(DOMstrings.inputType).value,
+        type : document.querySelector(DOMstrings.inputType).value, //puede ser "inc" o "exp"
         description : document.querySelector(DOMstrings.inputDescription).value,
         value : document.querySelector(DOMstrings.inputValue).value
       }
@@ -76,13 +107,22 @@ var controller = (function(budgetCtrl, UICtrl){
 
 
   var ctrlAddItem = function(){
-    // Obtener los datos de los campos de la UI
-    var input = UICtrl.getInput();
+    var input, newItem;
+    // 1. Obtener los datos de los campos de la UI
+    input = UICtrl.getInput();
     console.log(input);
+
+    // 2. Agregar el item al BUDGET CONTROLLER
+    newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+    // 3. Agregat el item a la UI
+
+    // 4. Calcular el presupuesto(BUDGET)
+
+    // 5. Mostrar presupuesto(BUDGET) en la UI
   };
 
   return {
-    init = function(){
+    init : function(){
       console.log("la aplicacion ha inicializado");
       setupEventListeners();
     }
