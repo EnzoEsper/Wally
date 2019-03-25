@@ -34,22 +34,35 @@ var UIController = (function(){
 // CONTROLADOR GLOBAL 
 var controller = (function(budgetCtrl, UICtrl){
 
-  //Obtiene el objeto DOMstrings del CONTROLADOR UI
-  var DOM = UICtrl.getDOMstrings();
+  // se agrupan los event listeners en una funcion para ordenar un poco mas el codigo (ya que se encontraban dispersados)
+  var setupEventListeners = function(){
+    
+    //Obtiene el objeto DOMstrings del CONTROLADOR UI
+    var DOM = UICtrl.getDOMstrings();
+
+    document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+  
+    document.addEventListener('keypress', function(event){
+      if (event.keyCode === 13 || event.which === 13 ) {
+        ctrlAddItem();
+      }
+    }) 
+  };
+
 
   var ctrlAddItem = function(){
-    
     // Obtener los datos de los campos de la UI
     var input = UICtrl.getInput();
     console.log(input);
+  };
+
+  return {
+    init = function(){
+      console.log("la aplicacion ha inicializado");
+      setupEventListeners();
+    }
   }
 
-  document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
-  
-  document.addEventListener('keypress', function(event){
-    if (event.keyCode === 13 || event.which === 13 ) {
-      ctrlAddItem();
-    }
-  })
-
 }(budgetController, UIController));
+
+controller.init();
