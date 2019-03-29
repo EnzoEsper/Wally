@@ -103,6 +103,27 @@ var UIController = (function(){
       //agregar el item a la UI (Insertar el HTML en el DOM)
       document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
     },
+
+    clearFields : function(){
+      var fields, fieldsArr;
+      
+      // en fields se almacena una lista con los campos que se quieren limpiar
+      fields = document.querySelectorAll(DOMstrings.inputDescription + ',' + DOMstrings.inputValue);
+
+      // un pequeno truco para convertir una lista a un arreglo
+      // como slice es una funcion, se puede llamar al metodo call() en ella
+      // y luego se setea la variable this a fields, haciendo que slice piense que le pasamos un array (pero en realidad no) y que retorne un array
+      fieldsArr = Array.prototype.slice.call(fields);
+
+      // Limpia cada uno de los campos almacenados en el arreglo
+      fieldsArr.forEach(function(current, index, array){
+        current.value = "";
+      });
+
+      //Una vez limpiados los campos, vuelve a seleccionar el primer campo para seguir agregando items
+      fieldsArr[0].focus();
+    },
+
     getDOMstrings : function(){
       return DOMstrings;
     }
@@ -141,6 +162,8 @@ var controller = (function(budgetCtrl, UICtrl){
     // 3. Agregar el item a la UI
     UICtrl.addListItem(newItem, input.type);
 
+    // 4. Limpiar los campos
+    UICtrl.clearFields();
     // 4. Calcular el presupuesto(BUDGET)
 
     // 5. Mostrar presupuesto(BUDGET) en la UI
