@@ -7,6 +7,19 @@ var budgetController = (function(){
     this.id = id;
     this.description = description;
     this.value = value;
+    this.percentage = -1;
+  };
+
+  Expense.prototype.calcPercentage = function(totalIncome){
+    if(totalIncome > 0){
+      this.percentage = Math.round((this.value / totalIncome) * 100)
+    } else {
+      this.percentage = -1 ;
+    }
+  };
+
+  Expense.prototype.getPercentage = function(){
+    return this.percentage;
   };
 
   var Income = function(id, description, value){
@@ -95,6 +108,21 @@ var budgetController = (function(){
         data.percentage = -1;
       }
       
+    },
+
+    calculatePercentages : function(){
+      data.allItems.exp.forEach(function(curr){
+        curr.calcPercentage(data.totals.inc);
+      })
+    },
+
+    getPercentages : function(){
+
+      var allPercentages = data.allItems.exp.map(function(curr){
+        return curr.getPercentage();
+      })
+
+      return allPercentages;
     },
 
     getBudget : function(){
@@ -242,6 +270,15 @@ var controller = (function(budgetCtrl, UICtrl){
     UICtrl.displayBudget(budget);
   };
 
+  var updatePercentages = function(){
+    // 1. Calcular los porcentajes
+    budgetCtrl.calculatePercentages();
+    // 2. Obtener los porcentajes del budget controller
+    var percentages = budgetCtrl.getPercentages();
+    // 3. Actualizar la UI con los nuevos porcentajes
+    console.log(percentages);
+  };
+
   var ctrlAddItem = function(){
     var input, newItem;
     // 1. Obtener los datos de los campos de la UI
@@ -259,6 +296,9 @@ var controller = (function(budgetCtrl, UICtrl){
 
       // 5. Calcular y actualizar budget 
       updateBudget();
+
+      // 6. Calcular y actualizar porcentajes
+      updatePercentages();
     };
   };
 
@@ -276,10 +316,15 @@ var controller = (function(budgetCtrl, UICtrl){
 
       // 1. Eliminar el item de la estuctura de datos
       budgetCtrl.deleteItem(type, ID);
+
       // 2. Eliminar el item de la UI
       UICtrl.deleteListItem(itemID);
+
       // 3. Actualizar y mostrar el nuevo presupuesto
       updateBudget();
+
+      // 4. Calcular y actualizar porcentajes
+      updatePercentages();
     }
   };
 
